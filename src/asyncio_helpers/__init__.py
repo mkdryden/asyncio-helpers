@@ -111,7 +111,11 @@ def ensure_event_loop():
 
 def with_loop(func):
     '''
-    Decorator to run function within an asyncio event loop.
+    Decorator to run coroutine within an asyncio event loop.
+
+    Parameters
+    ----------
+    func : asyncio.coroutine
 
     .. notes::
         Uses :class:`asyncio.ProactorEventLoop` on Windows to support file I/O
@@ -121,6 +125,17 @@ def with_loop(func):
         currently running, or b) *not a :class:`asyncio.ProactorEventLoop`
         instance*, execute function in a new thread running a new
         :class:`asyncio.ProactorEventLoop` instance.
+
+    Example
+    -------
+
+    >>> @with_loop
+    ... @asyncio.coroutine
+    ... def foo(a):
+    ...     raise asyncio.Return(a)
+    >>>
+    >>> a = 'hello'
+    >>> assert(foo(a) == a)
     '''
     @wraps(func)
     def wrapped(*args, **kwargs):
