@@ -5,7 +5,10 @@ import platform
 import threading
 
 from logging_helpers import _L
-import trollius as asyncio
+try:
+    import asyncio
+except ImportError:
+    import trollius as asyncio
 
 
 from ._version import get_versions
