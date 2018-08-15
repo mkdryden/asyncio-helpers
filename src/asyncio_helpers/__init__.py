@@ -19,6 +19,29 @@ def cancellable(f):
 
     The `cancel()` method cancels the running coroutine and by raising a
     `CancelledError` exception.
+
+    Parameters
+    ----------
+    f : asyncio.coroutine
+
+    Example
+    -------
+
+    >>> from asyncio_helpers import cancellable
+    >>> import trollius as asyncio
+    >>>
+    >>> @cancellable
+    ... @asyncio.coroutine
+    ... def _cancellable_test(duration_s):
+    ...     print('hello, world!')
+    ...     yield asyncio.From(asyncio.sleep(1.))
+    ...     print('goodbye, world!')
+    >>>
+    >>> with ThreadPoolExecutor() as executor:
+    ...     future = executor.submit(_cancellable_test, 1.)
+    ...     _cancellable_test.started.wait()
+    ...     _cancellable_test.cancel()
+    ...     future.result()  # raises `asyncio.CancelledError`
     '''
     started = threading.Event()
 
