@@ -42,6 +42,10 @@ def cancellable(f):
     ...     _cancellable_test.started.wait()
     ...     _cancellable_test.cancel()
     ...     future.result()  # raises `asyncio.CancelledError`
+
+
+    .. versionchanged:: 0.2.1
+        Retry cancelling tasks if a `RuntimeError` is raised.
     '''
     started = threading.Event()
 
@@ -54,9 +58,16 @@ def cancellable(f):
 
     def _cancel():
         loop = ensure_event_loop()
-        tasks = [task for task in asyncio.Task.all_tasks(loop=loop)
-                if task is not
-                asyncio.tasks.Task.current_task(loop=loop)]
+        current_task = asyncio.tasks.Task.current_task(loop=loop)
+        while True:
+            try:
+                tasks_to_cancel = asyncio.Task.all_tasks(loop=loop)
+                tasks = [task for task in tasks_to_cancel
+                         if task is not current_task]
+                break
+            except RuntimeError as exception:
+                # e.g., set changed size during iteration
+                _L().debug('ERROR: %s', exception, exc_info=True)
         list(map(lambda task: task.cancel(), tasks))
 
     def cancel():
