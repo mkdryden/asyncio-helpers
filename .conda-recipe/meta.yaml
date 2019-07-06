@@ -15,17 +15,16 @@ package:
 build:
   entry_points:
     - trollius-to-async = asyncio_helpers.trollius_to_async:main
-  script: python setup.py install --single-version-externally-managed --record record.txt
-  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
 
 requirements:
   build:
-    - logging-helpers
-    - trollius
+    - python
+    - pip
 
   run:
     - logging-helpers
-    - trollius
+    - trollius  # [py<34]
 
 test:
   imports:
