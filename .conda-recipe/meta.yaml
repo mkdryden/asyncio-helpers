@@ -13,6 +13,8 @@ package:
   version: {{ GIT_VERSION }}
 
 build:
+  entry_points:
+    - trollius-to-async = asyncio_helpers.trollius_to_async:main
   script: python setup.py install --single-version-externally-managed --record record.txt
   noarch: python
 
