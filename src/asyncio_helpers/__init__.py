@@ -1,16 +1,11 @@
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
 from functools import wraps, partial
 import platform
 import threading
 
 from logging_helpers import _L
-try:
-    import asyncio
-    from .async_py3 import *
-except ImportError:
-    import trollius as asyncio
-    from .async_py2 import *
+import asyncio
+from .async_py3 import *
+
 
 
 from ._version import get_versions
@@ -63,10 +58,10 @@ def cancellable(f):
 
     def _cancel():
         loop = ensure_event_loop()
-        current_task = asyncio.tasks.Task.current_task(loop=loop)
+        current_task = asyncio.current_task(loop=loop)
         while True:
             try:
-                tasks_to_cancel = asyncio.Task.all_tasks(loop=loop)
+                tasks_to_cancel = asyncio.all_tasks(loop=loop)
                 tasks = [task for task in tasks_to_cancel
                          if task is not current_task]
                 break
